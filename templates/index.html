@@ -1,0 +1,549 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Strength Checker</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f1024, #171638, #242052);
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 25px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 490px;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .logo-icon {
+            width: 65px;
+            height: 65px;
+            margin: 0 auto 15px;
+            border-radius: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 30px;
+            background: linear-gradient(135deg, #8b5cf6, #6366f1);
+            box-shadow: 0 8px 35px rgba(124, 58, 237, 0.35);
+        }
+
+        .logo h1 {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        .logo h1 span {
+            color: #a78bfa;
+        }
+
+        .logo p {
+            color: #aaa9c8;
+            font-size: 13px;
+            margin-top: 9px;
+            line-height: 1.6;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.25);
+            backdrop-filter: blur(20px);
+        }
+
+        .card-heading {
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .card-description {
+            color: #aaa9c8;
+            font-size: 12px;
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        .input-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #d6d3f5;
+            margin-bottom: 10px;
+        }
+
+        .password-box {
+            display: flex;
+            align-items: center;
+            border: 1px solid #444064;
+            background: rgba(10, 10, 30, 0.55);
+            border-radius: 13px;
+            padding: 0 13px;
+            transition: 0.25s;
+        }
+
+        .password-box:focus-within {
+            border-color: #a78bfa;
+            box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.12);
+        }
+
+        .password-box input {
+            flex: 1;
+            min-width: 0;
+            padding: 16px 0;
+            border: none;
+            outline: none;
+            background: transparent;
+            color: white;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        .password-box input::placeholder {
+            color: #777590;
+        }
+
+        .toggle-btn {
+            border: none;
+            background: transparent;
+            color: #b9b2e5;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 8px;
+        }
+
+        .toggle-btn:hover {
+            color: white;
+        }
+
+        .check-btn {
+            width: 100%;
+            margin-top: 16px;
+            padding: 15px;
+            border: none;
+            border-radius: 13px;
+            background: linear-gradient(100deg, #8b5cf6, #6366f1);
+            color: white;
+            font-size: 14px;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            transition: 0.25s;
+            box-shadow: 0 7px 20px rgba(99, 102, 241, 0.2);
+        }
+
+        .check-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 28px rgba(99, 102, 241, 0.35);
+        }
+
+        .check-btn:disabled {
+            opacity: 0.65;
+            cursor: wait;
+            transform: none;
+        }
+
+        .strength-section {
+            margin-top: 25px;
+            padding: 18px;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.035);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+        }
+
+        .strength-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 13px;
+        }
+
+        .strength-top span:first-child {
+            font-size: 12px;
+            color: #c1bfdc;
+        }
+
+        #strengthText {
+            font-size: 12px;
+            font-weight: 700;
+            color: #a78bfa;
+        }
+
+        .strength-bars {
+            display: flex;
+            gap: 6px;
+        }
+
+        .bar {
+            height: 5px;
+            flex: 1;
+            border-radius: 10px;
+            background: #373451;
+            transition: background 0.3s;
+        }
+
+        .section-title {
+            font-size: 13px;
+            font-weight: 700;
+            margin: 24px 0 14px;
+        }
+
+        .requirements {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .requirement {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            color: #aaa9c8;
+        }
+
+        .requirement .icon {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: #302d4a;
+            color: #a7a4c5;
+            font-size: 11px;
+        }
+
+        .requirement.met {
+            color: #c4b5fd;
+        }
+
+        .requirement.met .icon {
+            background: rgba(52, 211, 153, 0.15);
+            color: #34d399;
+        }
+
+        .suggestions {
+            display: none;
+            margin-top: 22px;
+            padding: 15px;
+            border-radius: 12px;
+            background: rgba(139, 92, 246, 0.08);
+            border: 1px solid rgba(167, 139, 250, 0.15);
+        }
+
+        .suggestions h3 {
+            font-size: 12px;
+            margin-bottom: 10px;
+            color: #c4b5fd;
+        }
+
+        .suggestions ul {
+            list-style: none;
+        }
+
+        .suggestions li {
+            font-size: 11px;
+            line-height: 1.6;
+            color: #c1bfdc;
+            margin-top: 7px;
+        }
+
+        .suggestions li::before {
+            content: "→ ";
+            color: #a78bfa;
+        }
+
+        .error {
+            display: none;
+            color: #fca5a5;
+            font-size: 12px;
+            margin-top: 12px;
+            line-height: 1.5;
+        }
+
+        .privacy {
+            text-align: center;
+            font-size: 10px;
+            color: #8886a8;
+            margin-top: 23px;
+            line-height: 1.7;
+        }
+
+        .footer {
+            text-align: center;
+            color: #777590;
+            font-size: 10px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 18px 12px;
+            }
+
+            .card {
+                padding: 23px 18px;
+            }
+
+            .logo h1 {
+                font-size: 25px;
+            }
+
+            .requirements {
+                gap: 12px 7px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="container">
+
+        <header class="logo">
+            <div class="logo-icon">🔐</div>
+            <h1>Password <span>Guard</span></h1>
+            <p>Check your password strength.<br>Build better security habits.</p>
+        </header>
+
+        <section class="card">
+            <h2 class="card-heading">Test Your Password</h2>
+            <p class="card-description">
+                Enter a test password to evaluate its strength and discover ways to improve it.
+            </p>
+
+            <form id="passwordForm">
+                <label class="input-label" for="password">YOUR PASSWORD</label>
+
+                <div class="password-box">
+                    <input
+                        type="password"
+                        id="password"
+                        placeholder="Enter a test password..."
+                        autocomplete="off"
+                        required
+                    >
+                    <button type="button" class="toggle-btn" id="toggleBtn">
+                        Show
+                    </button>
+                </div>
+
+                <button type="submit" class="check-btn" id="checkBtn">
+                    ✦ &nbsp; Check Password Strength
+                </button>
+
+                <p class="error" id="errorMessage" role="alert"></p>
+            </form>
+
+            <section class="strength-section" aria-live="polite">
+                <div class="strength-top">
+                    <span>Password Strength</span>
+                    <span id="strengthText">Not tested</span>
+                </div>
+
+                <div class="strength-bars">
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                </div>
+            </section>
+
+            <h3 class="section-title">Security Checklist</h3>
+
+            <div class="requirements">
+                <div class="requirement" id="req-length">
+                    <span class="icon">✓</span>
+                    <span>12+ characters</span>
+                </div>
+
+                <div class="requirement" id="req-uppercase">
+                    <span class="icon">✓</span>
+                    <span>Uppercase letter</span>
+                </div>
+
+                <div class="requirement" id="req-lowercase">
+                    <span class="icon">✓</span>
+                    <span>Lowercase letter</span>
+                </div>
+
+                <div class="requirement" id="req-number">
+                    <span class="icon">✓</span>
+                    <span>At least one number</span>
+                </div>
+
+                <div class="requirement" id="req-special">
+                    <span class="icon">✓</span>
+                    <span>Special character</span>
+                </div>
+
+                <div class="requirement" id="req-repeated">
+                    <span class="icon">✓</span>
+                    <span>Avoid 4 repeats</span>
+                </div>
+            </div>
+
+            <section class="suggestions" id="suggestionsBox">
+                <h3>💡 Suggestions to Improve</h3>
+                <ul id="suggestionsList"></ul>
+            </section>
+
+            <p class="privacy">
+                🛡️ Educational project · Don't enter your real or reused passwords.
+            </p>
+        </section>
+
+        <footer class="footer">
+            PASSWORD GUARD · PERSONAL SECURITY AWARENESS
+        </footer>
+
+    </main>
+
+    <script>
+        const form = document.getElementById("passwordForm");
+        const passwordInput = document.getElementById("password");
+        const toggleBtn = document.getElementById("toggleBtn");
+        const checkBtn = document.getElementById("checkBtn");
+        const strengthText = document.getElementById("strengthText");
+        const bars = document.querySelectorAll(".bar");
+        const errorMessage = document.getElementById("errorMessage");
+        const suggestionsBox = document.getElementById("suggestionsBox");
+        const suggestionsList = document.getElementById("suggestionsList");
+
+        const ruleNames = [
+            "length", "uppercase", "lowercase",
+            "number", "special", "repeated"
+        ];
+
+        const strengthColors = [
+            "#fb7185", "#fb923c", "#facc15",
+            "#34d399", "#22d3ee"
+        ];
+
+        toggleBtn.addEventListener("click", () => {
+            const hidden = passwordInput.type === "password";
+            passwordInput.type = hidden ? "text" : "password";
+            toggleBtn.textContent = hidden ? "Hide" : "Show";
+        });
+
+        function resetResult() {
+            strengthText.textContent = "Not tested";
+            strengthText.style.color = "#a78bfa";
+
+            bars.forEach(bar => {
+                bar.style.background = "#373451";
+            });
+
+            ruleNames.forEach(name => {
+                const item = document.getElementById("req-" + name);
+                item.classList.remove("met");
+            });
+
+            suggestionsBox.style.display = "none";
+            suggestionsList.replaceChildren();
+        }
+
+        passwordInput.addEventListener("input", () => {
+            errorMessage.style.display = "none";
+            resetResult();
+        });
+
+        form.addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            const password = passwordInput.value;
+
+            if (!password) {
+                errorMessage.textContent = "Please enter a test password.";
+                errorMessage.style.display = "block";
+                return;
+            }
+
+            checkBtn.disabled = true;
+            checkBtn.textContent = "Checking...";
+            errorMessage.style.display = "none";
+
+            try {
+                const response = await fetch("/api/check", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ password })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || "Unable to check password.");
+                }
+
+                const score = Math.max(0, Math.min(4, data.score));
+
+                strengthText.textContent = data.strength;
+                strengthText.style.color = strengthColors[score];
+
+                bars.forEach((bar, index) => {
+                    bar.style.background =
+                        index <= score ? strengthColors[score] : "#373451";
+                });
+
+                ruleNames.forEach(name => {
+                    const item = document.getElementById("req-" + name);
+                    item.classList.toggle("met", Boolean(data.rules[name]));
+                });
+
+                suggestionsList.replaceChildren();
+
+                (data.suggestions || []).forEach(suggestion => {
+                    const li = document.createElement("li");
+                    li.textContent = suggestion;
+                    suggestionsList.appendChild(li);
+                });
+
+                suggestionsBox.style.display =
+                    data.suggestions && data.suggestions.length
+                    ? "block" : "none";
+
+            } catch (error) {
+                errorMessage.textContent =
+                    error.message || "Something went wrong. Please try again.";
+                errorMessage.style.display = "block";
+            } finally {
+                checkBtn.disabled = false;
+                checkBtn.innerHTML = "✦ &nbsp; Check Password Strength";
+            }
+        });
+    </script>
+</body>
+</html>
+```
